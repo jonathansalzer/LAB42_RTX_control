@@ -7,7 +7,7 @@ sudo -i << EOF
 cd "$current_dir"
 
 ### sourcing ROS files
-source /opt/ros/foxy/setup.bash
+source /opt/ros/humble/setup.bash
 source ROS_ws/install/setup.bash
 
 ### Launch the daemon
