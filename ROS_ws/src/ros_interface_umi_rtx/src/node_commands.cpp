@@ -126,20 +126,23 @@ void Objective_node::timer_callback(){
     }
     t+=dt;
 
-    geometry_msgs::msg::Pose pose_msg;
-    pose_msg.position.x = x;
-    pose_msg.position.y = y;
-    pose_msg.position.z = z;
+    if (publishing)
+    {
+        geometry_msgs::msg::Pose pose_msg;
+        pose_msg.position.x = x;
+        pose_msg.position.y = y;
+        pose_msg.position.z = z;
 
-    pose_msg.orientation.x = yaw; 
-    pose_msg.orientation.y = pitch;
-    pose_msg.orientation.z = roll;
+        pose_msg.orientation.x = yaw; 
+        pose_msg.orientation.y = pitch;
+        pose_msg.orientation.z = roll;
 
-    pose_publisher->publish(pose_msg);
+        pose_publisher->publish(pose_msg);
 
-    std_msgs::msg::Float32 grip_msg;
-    grip_msg.data = grip;
-    grip_publisher->publish(grip_msg);
+        std_msgs::msg::Float32 grip_msg;
+        grip_msg.data = grip;
+        grip_publisher->publish(grip_msg);
+    }
 }
 
 void Objective_node::get_processed_pose(const geometry_msgs::msg::Pose::SharedPtr msg){

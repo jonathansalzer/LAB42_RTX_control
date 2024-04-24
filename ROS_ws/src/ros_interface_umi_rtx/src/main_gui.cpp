@@ -196,6 +196,38 @@ MainGUI::MainGUI(QApplication * app,
         }
     });
 
+    // Button to activate/deactivate ROS publishing
+    QPushButton* rosButton = new QPushButton(this);
+    rosButton->setCheckable(true);
+    rosButton->setChecked(true);
+    // Personnalisation de l'apparence du switch
+    rosButton->setFixedSize(120, 50);
+    rosButton->setText("ROS publishing");
+    rosButton->setStyleSheet("QPushButton {"
+                                "border: none;"
+                                "background-color: #ccc;"
+                                "border-radius: 10px"
+                                "}"
+                                "QPushButton:checked {"
+                                    "background-color: #6c6;"
+                                "}"
+                                "QPushButton:!checked {"
+                                    "background-color: #ccc;"
+                                "}");
+
+    // Connection of the clicked signal to the corresponding slot to react to clicks on the switch
+    connect(rosButton, &QPushButton::clicked, this, [=]() {
+        manual_on = rosButton->isChecked();
+        if (manual_on){
+            ros2_node->publishing = true;
+            rosButton->setText("ROS publishing");
+        }
+        else {
+            ros2_node->publishing = false;
+            rosButton->setText("ROS publishing paused");
+        }
+    });
+
 
     // Button to switch between depth and processed image
     QPushButton* imageButton = new QPushButton(this);
@@ -228,6 +260,7 @@ MainGUI::MainGUI(QApplication * app,
     });
 
     main_layout->addWidget(switchButton,0,3);
+    main_layout->addWidget(rosButton,0,4);
 
     // Initialize RViz configuration
     initializeRViz();
@@ -375,7 +408,7 @@ int main(int argc, char* argv[])
 
     while (rclcpp::ok())
     {   
-        if (ros2_node->mode=="manual"){
+        if (ros2_node->mode=="manual" && ros2_node->publishing){
             ros2_node->update_state(gui_app->x, gui_app->y, gui_app->z, gui_app->yaw, gui_app->pitch, gui_app->roll, gui_app->grip);
         }
         exec.spin_some();

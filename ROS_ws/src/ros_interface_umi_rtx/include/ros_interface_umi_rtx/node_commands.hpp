@@ -64,6 +64,7 @@ public:
     string mode="manual";
     cv::Mat processed_frame, depth_frame;
     double x=0., y=0.6, z=0.6, yaw=0.,pitch=0.,roll=0., grip=0.2;
+    bool publishing=true;
 
 private :
     /**
