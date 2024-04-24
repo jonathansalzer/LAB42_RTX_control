@@ -94,22 +94,15 @@ private:
      */
     void get_grip(const std_msgs::msg::Float32::SharedPtr msg);
     /**
-     * @brief Set the motors/joints to their required state to reach the desired position
+     * @brief Set the position motors/joints to their required state to reach the desired position
      * 
      */
-    void set_motors();
+    void set_pos_motors();
     /**
-     * @brief Get the joints' parameters
+     * @brief Set the gripper motors/joints to their required state to reach the desired position
      * 
      */
-    void get_params();
-
-    /**
-     * @brief Converts motors_params into a string to publish more easily
-     * 
-     * @return string 
-     */
-    string params2msg();
+    void set_grip_motors();
     
     std::chrono::milliseconds loop_dt_ = 40ms; // Timer of the node
     map<int,double> commands_motor; // Map that stores the commands for each motor

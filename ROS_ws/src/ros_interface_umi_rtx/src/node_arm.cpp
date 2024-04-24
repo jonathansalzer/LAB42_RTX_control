@@ -28,26 +28,22 @@ void Arm_node::init_interfaces(){
 }
 
 void Arm_node::timer_callback(){
-    // TODO improve time for get_params
-    // get_params();
-
-    // // Collect the parameters and publish them
-    // std_msgs::msg::String params;
-
-    // params.data = params2msg();
-
-    // publisher_params->publish(params);
 
     if (commands_motor.size()>0 and !umi_moving() and (x!=targ_x or y!=targ_y or z!=targ_z or yaw!=target_yaw or pitch!=target_pitch or roll!=target_roll or grip!=target_grip)){
+        
+        if (grip!=target_grip) {
+            grip = target_grip;
+            set_grip_motors();
+        }
+        
         x = targ_x;
         y = targ_y;
         z = targ_z;
         yaw = target_yaw;
         pitch = target_pitch;
         roll = target_roll;
-        grip = target_grip;
 
-        set_motors();
+        set_pos_motors();
         arm_go(NUMERIC,0x1555);
     }
 }
@@ -74,11 +70,10 @@ void Arm_node::get_pose(const geometry_msgs::msg::Pose::SharedPtr msg){
 }
 
 void Arm_node::get_grip(const std_msgs::msg::Float32::SharedPtr msg){
-    commands_motor[GRIP] = msg->data*1000;
     target_grip = msg->data;
 }
 
-void Arm_node::set_motors(){
+void Arm_node::set_pos_motors(){
     int key;
     float obj_angle;
     
@@ -90,51 +85,14 @@ void Arm_node::set_motors(){
         }
 
         else if (key==ZED){
-            full_arm.mJoints[ZED]->setZed(pair.second);
-        }
-
-        else if (key==GRIP){
-            full_arm.mJoints[GRIP]->setGrip(pair.second);
+            full_arm.mJoints[ZED]->setZed(obj_angle);
         }
     }
 }
 
-void Arm_node::get_params(){
-    int value,res;
-    motors_params = {};
-    
-    for (const auto motor:full_arm.mJoints){
-        motors_params[motor->m_ID] = {};
-        res = motor->get_parameter(CURRENT_POSITION, &value);
-        if (res!=-1){
-            motors_params[motor->m_ID][CURRENT_POSITION] = value;
-        }
-    }
+void Arm_node::set_grip_motors(){
+    full_arm.mJoints[GRIP]->setGrip(grip*1000);
 }
-
-string Arm_node::params2msg(){
-    std::ostringstream oss;
-
-    oss << "{";
-    for (const auto& item1 : motors_params) {
-        oss << item1.first << ": {";
-        for (const auto& item2 : item1.second) {
-            oss << "{" << item2.first << "," << item2.second << "}";
-            if (item2.first != 15){
-                oss << ",";
-            }
-        }
-        oss << "} ";
-        if (item1.first!=7){
-            oss << ",";
-        }
-    }
-    oss << "}";
-    std::string result = oss.str();
-
-    result = result.substr(0, result.length() - 2);
-    return result;
-    }
 
 int main(int argc, char *argv[]){
     rclcpp::init(argc,argv);
