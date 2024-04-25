@@ -55,7 +55,9 @@ void Arm_node::get_commands(const sensor_msgs::msg::JointState::SharedPtr msg){
     commands_motor = {{ZED,objective[0]},
                       {SHOULDER,objective[1]},
                       {ELBOW,objective[2]},
-                      {YAW,objective[3]},
+                      // The yaw is also connected to the elbow motor on the real robot.
+                      // To account for that, we add half of the elbow angle to the yaw angle.
+                      {YAW,objective[3]+objective[2]/2},
                       {WRIST1,(objective[4]+objective[5])},
                       {WRIST2,(objective[5]-objective[4])}};
 }
