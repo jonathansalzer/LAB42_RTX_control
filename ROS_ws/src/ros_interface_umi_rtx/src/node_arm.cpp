@@ -29,8 +29,13 @@ void Arm_node::init_interfaces(){
 
 void Arm_node::timer_callback(){
 
-    if (commands_motor.size()>0 and !umi_moving() and (x!=targ_x or y!=targ_y or z!=targ_z or yaw!=target_yaw or pitch!=target_pitch or roll!=target_roll or grip!=target_grip)){
-        
+    // TODO: checking for changes in target values here leads to timing issues. Sometimes (most of the time), single commands are ignored. 
+    // Removing the checks for changes here seems to solve the issue. The issue probably comes from somewhere else, so keep that in mind.
+    
+    //if (commands_motor.size()>0 and !umi_moving() and (x!=targ_x or y!=targ_y or z!=targ_z or yaw!=target_yaw or pitch!=target_pitch or roll!=target_roll or grip!=target_grip)){
+    if (commands_motor.size()>0 and !umi_moving()){
+
+
         if (grip!=target_grip) {
             grip = target_grip;
             set_grip_motors();
